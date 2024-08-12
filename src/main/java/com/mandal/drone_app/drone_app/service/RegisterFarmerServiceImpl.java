@@ -1,12 +1,9 @@
 package com.mandal.drone_app.drone_app.service;
 
-import com.mandal.drone_app.drone_app.model.FarmerId;
 import com.mandal.drone_app.drone_app.model.RegisterFarmer;
 import com.mandal.drone_app.drone_app.repository.RegisterFarmerRepo;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,5 +50,20 @@ public class RegisterFarmerServiceImpl implements RegisterFarmerService {
             return Optional.of(registerFarmerRepository.save(existingFarmer));
         }
         return Optional.empty();
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public boolean deleteFarmerByMobileNumber(String farmerMobNo) {
+        Optional<RegisterFarmer> existingFarmerOpt = registerFarmerRepository.findByFarmerId_FarmerMobNo(farmerMobNo);
+        if (existingFarmerOpt.isPresent()) {
+            registerFarmerRepository.delete(existingFarmerOpt.get());
+            return true;
+        }
+        return false;
+    }
+
+    public List<RegisterFarmer> getFarmersByName(String farmerName) {
+        return registerFarmerRepository.findByFarmerId_FarmerNameContainingIgnoreCase(farmerName);
     }
 }
