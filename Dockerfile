@@ -8,7 +8,21 @@
 # EXPOSE 8080
 # ENTRYPOINT ["java", "-jar", "demo.jar"]
 
-FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+# FROM openjdk:8-jdk-alpine
+# ARG JAR_FILE=target/*.jar
+# COPY ${JAR_FILE} app.jar
+# ENTRYPOINT ["java","-jar","/app.jar"]
+
+FROM alpine/java:21-jdk
+
+# Create user to run app as (instead of root)
+RUN addgroup -S app && adduser -S app -G app
+
+# Use user "app"
+USER app
+
+# copy the jar file into the docker image
+COPY target/*.jar app.jar
+
+# Run the jar file 
+ENTRYPOINT [ "java","-jar","/app.jar"]
