@@ -13,16 +13,29 @@
 # COPY ${JAR_FILE} app.jar
 # ENTRYPOINT ["java","-jar","/app.jar"]
 
-FROM alpine/java:21-jdk
+# FROM alpine/java:21-jdk
 
-# Create user to run app as (instead of root)
-RUN addgroup -S app && adduser -S app -G app
+# # Create user to run app as (instead of root)
+# RUN addgroup -S app && adduser -S app -G app
 
-# Use user "app"
-USER app
+# # Use user "app"
+# USER app
 
-# copy the jar file into the docker image
-COPY target/*.jar app.jar
+# # copy the jar file into the docker image
+# COPY target/*.jar app.jar
 
-# Run the jar file 
-ENTRYPOINT [ "java","-jar","/app.jar"]
+# # Run the jar file 
+# ENTRYPOINT [ "java","-jar","/app.jar"]
+
+FROM maven:3.8.2-eclipse-temurin-21 AS build
+COPY . .
+RUN mvn clean package -DskipTests
+
+#
+# Package stage
+#
+FROM eclipse-temurin:21-jdk-slim
+COPY --from=build /target/demo-0.0.1-SNAPSHOT.jar demo.jar
+# ENV PORT=8080
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","demo.jar"]
